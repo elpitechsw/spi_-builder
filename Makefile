@@ -6,8 +6,8 @@ SPI_FLASHER ?= 0
 #MAX_FREQ ?= 2400
 BAIKAL_DDR_CUSTOM_CLOCK_FREQ = $(shell expr $(MAX_FREQ) / 2)
 
-SDK_VER := 6.2
-SDK_REV = 0x62
+SDK_VER := 6.4
+SDK_REV = 0x64
 PLAT = bm1000
 
 # End of user configurable parameters
@@ -41,7 +41,7 @@ else ifeq ($(BOARD),et121)
 	BOARD_VER = 5
 else ifeq ($(BOARD),et161)
 	BE_TARGET = elp_bm
-	BOARD_VER = 5
+	BOARD_VER = 8
 else ifeq ($(BOARD),et111)
 	BE_TARGET = elp_bm
 	BOARD_VER = 3
@@ -58,7 +58,7 @@ else ifeq ($(BOARD),et143)
 	BE_TARGET = elp_bs
 	PLAT = bs1000
 	DUAL_FLASH = yes
-	BOARD_VER = 8
+	BOARD_VER = 9
 	MAX_FREQ =
 endif
 
@@ -69,6 +69,9 @@ DUAL_FLASH ?= no
 ARMTF_DEFS += "DUAL_FLASH=$(DUAL_FLASH)"
 ifeq ($(V),1)
 ARMTF_DEFS += "V=1"
+endif
+ifeq ($(PLAT),bm1000)
+ARMTF_DEFS += "ENABLE_CONSOLE_GETC=1"
 endif
 UEFI_BUILD_TYPE ?= RELEASE
 #UEFI_BUILD_TYPE = DEBUG
