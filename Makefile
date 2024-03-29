@@ -211,6 +211,7 @@ list:
 	@echo "BOARD=et113"
 	@echo "BOARD=et121"
 	@echo "BOARD=et141"
+	@echo "BOARD=et143"
 	@echo "BOARD=et151-lvds"
 	@echo "BOARD=et151-dp"
 	@echo "BOARD=em407"
