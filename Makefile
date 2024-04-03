@@ -60,6 +60,8 @@ else ifeq ($(BOARD),et143)
 	DUAL_FLASH = yes
 	BOARD_VER = 9
 	MAX_FREQ =
+else
+$(error BOARD=$(BOARD) is invalid. Run make list)
 endif
 
 ifneq ($(MAX_FREQ),)
@@ -84,8 +86,6 @@ endif
 ifeq ($(ARMTF_NO_PRINT),1)
 ARMTF_DEFS += "ARMTF_NO_PRINT=1"
 endif
-
-SCP_BLOB = ./prebuilts/bm1000-scp.bin
 
 ARCH = arm64
 NCPU := $(shell nproc)
@@ -114,7 +114,7 @@ ifeq ($(BE_TARGET),elp_bm)
 	UEFI_FLAGS += -DBAIKAL_ELP=TRUE -DBOARD_VER=$(BOARD_VER)
 	UEFI_PLATFORM = Platform/Baikal/BM1000Rdb/BM1000Rdb.dsc
 else
-	TARGET_CFG = bm1000_defconfig
+	TARGET_CFG = bs1000_defconfig
 	TARGET_DTB = baikal/bs-$(BOARD).dtb
 	UEFI_FLAGS += -DBAIKAL_ELP=TRUE -DBOARD_VER=$(BOARD_VER)
 	UEFI_PLATFORM = Platform/Baikal/BS1000Rdb/BS1000Rdb.dsc
@@ -138,6 +138,7 @@ else
 	[ -f $(UEFI_DIR)/edk2-platform-baikal/Platform ] || (cp -pR $(SRC_ROOT)/edk2-platform-baikal/* $(UEFI_DIR)/edk2-platform-baikal)
 	[ -f $(KERN_DIR)/Makefile ] || (cp -pR $(SRC_ROOT)/kernel/* $(KERN_DIR))
 endif
+ifeq ($(PLAT),bm1000)
 ifneq ($(ARMTF_LOGO),)
 	[ -f $(ARMTF_DIR)/plat/baikal/bm1000/$(ARMTF_LOGO).c ] && \
 		ln -sf $(ARMTF_LOGO).c $(ARMTF_DIR)/plat/baikal/bm1000/bm1000_bl31_logo.c
@@ -145,6 +146,7 @@ endif
 ifneq ($(UEFI_LOGO),)
 	[ -f $(UEFI_DIR)/edk2-platform-baikal/Platform/Baikal/Logo/$(UEFI_LOGO).bmp ] && \
 		ln -sf $(UEFI_LOGO).bmp $(UEFI_DIR)/edk2-platform-baikal/Platform/Baikal/Logo/Logo.bmp
+endif
 endif
 
 submodules:
@@ -190,7 +192,7 @@ arm-tf $(IMG_DIR)/$(BOARD).fip.bin $(IMG_DIR)/$(BOARD).bl1.bin: $(IMG_DIR)/$(BOA
 	cp $(BL1_BIN) $(IMG_DIR)/$(BOARD).bl1.bin
 
 bootrom: $(IMG_DIR)/$(BOARD).fip.bin $(IMG_DIR)/$(BOARD).dtb
-	SDK_VER=$(SDK_VER) BOARD=$(BOARD) SCP_BLOB=$(SCP_BLOB) DUAL_FLASH=$(DUAL_FLASH) MAX_FREQ=$(MAX_FREQ) PLAT=$(PLAT) IMG_DIR=$(IMG_DIR) REL_DIR=$(REL_DIR) ./genrom.sh
+	SDK_VER=$(SDK_VER) BOARD=$(BOARD) DUAL_FLASH=$(DUAL_FLASH) MAX_FREQ=$(MAX_FREQ) PLAT=$(PLAT) IMG_DIR=$(IMG_DIR) REL_DIR=$(REL_DIR) ./genrom.sh
 
 dtb $(IMG_DIR)/$(BOARD).dtb: 
 	mkdir -p $(KBUILD_DIR)
@@ -203,7 +205,7 @@ clean: basetools-clean
 	rm -rf $(UEFI_DIR)/Build
 	rm -f basetools
 	rm -rf $(IMG_DIR) $(REL_DIR)
-	[ -f $(ARMTF_DIR)/Makefile ] && $(MAKE) -C $(ARMTF_DIR) PLAT=bm1000 BAIKAL_TARGET=$(BE_TARGET) realclean || true
+	[ -f $(ARMTF_DIR)/Makefile ] && $(MAKE) -C $(ARMTF_DIR) realclean || true
 
 list:
 	@echo "BOARD=et101-v2-lvds (et101-mb-1.1-rev2 or et101-mb-1.1-rev1.1)"

@@ -8,7 +8,9 @@ UEFI_VARS_SIZE=$(( 12 * 65536 ))
 LINUX_PART_START=$(( 8 * 1024 * 1024 ))
 FIP_MAX_SIZE=$(($LINUX_PART_START - ($DTB_SIZE) - ($UEFI_VARS_SIZE) - ($BL1_RESERVED_SIZE)))
 FIP_BIN=${IMG_DIR}/${BOARD}.fip.bin
-TRF_IMG=${IMG_DIR}/../prebuilts/bs1000-ddr-trainfware.bin
+BS_TRF_IMG=${IMG_DIR}/../prebuilts/bs1000-ddr-trainfware.bin
+BM_SCP_BLOB=${IMG_DIR}/../prebuilts/bm1000-scp.bin
+
 if [ -d .git ] ; then
 	RELTAG=$(git describe --tags)
 else
@@ -71,15 +73,15 @@ cat ${IMG_DIR}/${BOARD}.dtb >> ${FLASH_IMG} || exit
 if [ "${PLAT}" = "bs1000" ] ; then
 	echo 1fc00 01 11 21 31 41 51 61 71 81 91 a1 b1 | xxd -r  - ${FLASH_IMG}
 	truncate --no-create --size=$(($BL1_RESERVED_SIZE + $TRF_OFFS)) ${FLASH_IMG} || exit
-	cat ${TRF_IMG} >> ${FLASH_IMG}
+	cat ${BS_TRF_IMG} >> ${FLASH_IMG}
 fi
 truncate --no-create --size=$(($BL1_RESERVED_SIZE + $DTB_SIZE + $UEFI_VARS_SIZE)) ${FLASH_IMG} || exit
 cat ${FIP_BIN} >> ${FLASH_IMG} || exit
 
 dd if=/dev/zero bs=1M count=32 | tr "\000" "\377" > ${PADDED} || exit
-if [ ${DUAL_FLASH} = 'no' ]; then
+if [ ${PLAT} = "bm1000" -a ${DUAL_FLASH} = 'no' ]; then
 	# add 512 KB SCP image; 0.5 + 8 + 23.5 = 32 MB total flash size
-	cat ${SCP_BLOB} ${FLASH_IMG} > ${IMG_DIR}/${MB}.full.img
+	cat ${BM_SCP_BLOB} ${FLASH_IMG} > ${IMG_DIR}/${MB}.full.img
 	dd if=${IMG_DIR}/${MB}.full.img of=${PADDED} conv=notrunc || exit
 	echo "00000000:0007ffff scp" > ${LAYOUT}
 	echo "00080000:000bffff bl1" >> ${LAYOUT}
