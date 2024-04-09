@@ -106,17 +106,17 @@ et141-mb-rev1:
     UEFI_DEBUG: 0
   <<: *build_firmware_dfn
 
-et161-mb:
+et161-mb-rev1:
   variables:
-    BOARD_NAME: ET161
+    BOARD_NAME: ET161-MB-Rev1
     BUILD_TARGET: et161
     ARMTF_DEBUG: 0
     UEFI_DEBUG: 0
   <<: *build_firmware_dfn
 
-et143-mb-server:
+et143-mb-rev1:
   variables:
-    BOARD_NAME: ET143-MB
+    BOARD_NAME: ET143-MB-Rev1
     BUILD_TARGET: et143
     ARMTF_DEBUG: 0
     UEFI_DEBUG: 0

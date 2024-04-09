@@ -39,6 +39,12 @@ case "${BOARD}" in
     et101-v2-dp)
         MB="ET101-MB-1.2-Rev2"
         ;;
+    et161)
+        MB="ET161-MB-Rev1"
+        ;;
+    et143)
+        MB="ET143-MB-Rev1"
+        ;;
     mitx-d)
         MB="TF307-MB-S-D-Rev4.0"
         ;;
