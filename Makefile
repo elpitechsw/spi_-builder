@@ -60,6 +60,12 @@ else ifeq ($(BOARD),et143)
 	DUAL_FLASH = yes
 	BOARD_VER = 9
 	MAX_FREQ =
+else ifeq ($(BOARD),et163)
+	BE_TARGET = elp_bs
+	PLAT = bs1000
+	DUAL_FLASH = yes
+	BOARD_VER = 10
+	MAX_FREQ =
 else
 $(error BOARD=$(BOARD) is invalid. Run make list)
 endif
@@ -72,9 +78,7 @@ ARMTF_DEFS += "DUAL_FLASH=$(DUAL_FLASH)"
 ifeq ($(V),1)
 ARMTF_DEFS += "V=1"
 endif
-ifeq ($(PLAT),bm1000)
 ARMTF_DEFS += "ENABLE_CONSOLE_GETC=1"
-endif
 UEFI_BUILD_TYPE ?= RELEASE
 #UEFI_BUILD_TYPE = DEBUG
 ARMTF_DEBUG ?= 0
