@@ -45,6 +45,9 @@ case "${BOARD}" in
     et143)
         MB="ET143-MB-Rev1"
         ;;
+    et163)
+        MB="ET163-MB-Rev1"
+        ;;
     mitx-d)
         MB="TF307-MB-S-D-Rev4.0"
         ;;

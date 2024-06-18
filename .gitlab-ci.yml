@@ -122,3 +122,11 @@ et143-mb-rev1:
     UEFI_DEBUG: 0
   <<: *build_firmware_dfn
 
+et163-mb-rev1:
+  variables:
+    BOARD_NAME: ET163-MB-Rev1
+    BUILD_TARGET: et163
+    ARMTF_DEBUG: 0
+    UEFI_DEBUG: 0
+  <<: *build_firmware_dfn
+
