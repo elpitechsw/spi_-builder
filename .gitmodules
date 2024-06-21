@@ -9,7 +9,7 @@
 [submodule "uefi/edk2"]
 	path = uefi/edk2
 	url = ../edk2
-	branch = local_modules
+	branch = lm-sdk-6.4
 [submodule "uefi/edk2-non-osi"]
 	path = uefi/edk2-non-osi
 	url = ../edk2-non-osi.git
