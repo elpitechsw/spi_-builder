@@ -18,3 +18,7 @@
 	url = ../kernel
 	branch = linux-6.1-elp
 	shallow = true
+[submodule "uefi/edk2"]
+	path = uefi/edk2
+	url = ../edk2
+	branch = sdk-6.4
