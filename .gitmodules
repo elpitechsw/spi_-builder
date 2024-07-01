@@ -6,11 +6,6 @@
 	path = uefi/edk2-platform-baikal
 	url = ../edk2-platform-baikal
 	branch = 6.4-elp
-[submodule "uefi/edk2"]
-	path = uefi/edk2
-	url = ../edk2
-	branch = sdk-6.4
-	shallow = true
 [submodule "uefi/edk2-non-osi"]
 	path = uefi/edk2-non-osi
 	url = http://github.com/tianocore/edk2-non-osi.git
