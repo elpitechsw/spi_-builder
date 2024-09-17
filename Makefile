@@ -42,6 +42,9 @@ else ifeq ($(BOARD),et121)
 else ifeq ($(BOARD),et161)
 	BE_TARGET = elp_bm
 	BOARD_VER = 8
+else ifeq ($(BOARD),et171)
+	BE_TARGET = elp_bm
+	BOARD_VER = 7
 else ifeq ($(BOARD),et111)
 	BE_TARGET = elp_bm
 	BOARD_VER = 3
@@ -77,6 +80,9 @@ DUAL_FLASH ?= no
 ARMTF_DEFS += "DUAL_FLASH=$(DUAL_FLASH)"
 ifeq ($(V),1)
 ARMTF_DEFS += "V=1"
+endif
+ifneq ($(INTERACTIVE_DDR_CONFIG),)
+ARMTF_DEFS += "INTERACTIVE_DDR_CONFIG=1"
 endif
 ARMTF_DEFS += "ENABLE_CONSOLE_GETC=1"
 UEFI_BUILD_TYPE ?= RELEASE
