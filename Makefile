@@ -36,9 +36,15 @@ else ifneq ($(filter et151-%,$(BOARD)),)
 else ifeq ($(BOARD),et141)
 	BE_TARGET = elp_bm
 	BOARD_VER = 5
+	ARMTF_NO_PRINT = 1
+	ARMTF_LOGO = malevich
+	UEFI_LOGO = LogoMalevich
 else ifeq ($(BOARD),et121)
 	BE_TARGET = elp_bm
 	BOARD_VER = 5
+	ARMTF_NO_PRINT = 1
+	ARMTF_LOGO = malevich
+	UEFI_LOGO = LogoMalevich
 else ifeq ($(BOARD),et161)
 	BE_TARGET = elp_bm
 	BOARD_VER = 8
