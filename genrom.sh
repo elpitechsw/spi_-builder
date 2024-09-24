@@ -42,6 +42,9 @@ case "${BOARD}" in
     et161)
         MB="ET161-MB-Rev1"
         ;;
+    et171)
+        MB="ET171-MB-Rev1"
+        ;;
     et143)
         MB="ET143-MB-Rev1"
         ;;
