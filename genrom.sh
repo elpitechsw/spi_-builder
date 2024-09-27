@@ -63,6 +63,11 @@ case "${BOARD}" in
     et113)
         MB="ET113-MB-A"
         ;;
+    et153-d)
+        MB="ET153-MB"
+        DTB_SIZE=$(( 12 * 65536 ))
+        TRF_OFFS=$(( 10 * 65536 ))
+        ;;
     *)
         MB="${BOARD}"
         ;;

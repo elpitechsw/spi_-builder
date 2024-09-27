@@ -77,6 +77,15 @@ else ifeq ($(BOARD),et163)
 	DUAL_FLASH = yes
 	BOARD_VER = 10
 	MAX_FREQ =
+else ifneq ($(filter et153-%,$(BOARD)),)
+	BE_TARGET = elp_bs
+	PLAT = bs1000
+	DUAL_FLASH = yes
+ifeq ($(BOARD),et153-d)
+	BOARD_VER = 12
+else
+	BOARD_VER = 11
+endif
 else
 $(error BOARD=$(BOARD) is invalid. Run make list)
 endif
@@ -91,6 +100,9 @@ ARMTF_DEFS += "V=1"
 endif
 ifneq ($(INTERACTIVE_DDR_CONFIG),)
 ARMTF_DEFS += "INTERACTIVE_DDR_CONFIG=1"
+endif
+ifneq ($(DDR_ECC_OFF),)
+ARMTF_DEFS += "DDR_ECC_OFF=1"
 endif
 ARMTF_DEFS += "ENABLE_CONSOLE_GETC=1"
 UEFI_BUILD_TYPE ?= RELEASE
