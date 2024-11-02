@@ -37,15 +37,15 @@ else ifeq ($(BOARD),et141)
 	BE_TARGET = elp_bm
 	BOARD_VER = 5
 	ARMTF_NO_PRINT = 1
-	ARMTF_LOGO = malevich
-	UEFI_LOGO = LogoMalevich
+	ARMTF_LOGO = savt_logo
+	UEFI_LOGO = LogoSAVT
 	OEM_VENDOR = SAVT
 else ifeq ($(BOARD),et121)
 	BE_TARGET = elp_bm
 	BOARD_VER = 5
 	ARMTF_NO_PRINT = 1
-	ARMTF_LOGO = malevich
-	UEFI_LOGO = LogoMalevich
+	ARMTF_LOGO = savt_logo
+	UEFI_LOGO = LogoSAVT
 	OEM_VENDOR = SAVT
 else ifeq ($(BOARD),et161)
 	BE_TARGET = elp_bm
