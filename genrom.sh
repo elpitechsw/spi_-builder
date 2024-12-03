@@ -1,15 +1,19 @@
 #!/bin/bash 
 # Make FLASH_IMG: concatenate BL1, board IDs, DTB, FIP_BIN and reserve area for UEFI vars
 
-BL1_RESERVED_SIZE=$((4 * 65536)) #0x40000
-DTB_SIZE=$(( 4 * 65536 ))
-TRF_OFFS=$((2 * 65536))
 UEFI_VARS_SIZE=$(( 12 * 65536 ))
 LINUX_PART_START=$(( 8 * 1024 * 1024 ))
-FIP_MAX_SIZE=$(($LINUX_PART_START - ($DTB_SIZE) - ($UEFI_VARS_SIZE) - ($BL1_RESERVED_SIZE)))
 FIP_BIN=${IMG_DIR}/${BOARD}.fip.bin
-BS_TRF_IMG=${IMG_DIR}/../prebuilts/bs1000-ddr-trainfware.bin
-BM_SCP_BLOB=${IMG_DIR}/../prebuilts/bm1000-scp.bin
+if [ "${PLAT}" = "bs1000" ] ; then
+	DDRFW_NVBASE=$(( 0x20000 ))
+	BS_TRF_IMG=${IMG_DIR}/../prebuilts/bs1000-ddr-trainfware.bin
+	FIP_NVBASE=$(( 0x40000 ))
+	UEFI_VARS_NVBASE=$(( 0x2c0000 ))
+else
+	BM_SCP_BLOB=${IMG_DIR}/../prebuilts/bm1000-scp.bin
+	FIP_NVBASE=$(( 0x0f000 ))
+	UEFI_VARS_NVBASE=$(( 0x280000 ))
+fi
 
 if [ -d .git ] ; then
 	RELTAG=$(git describe --tags)
@@ -65,8 +69,12 @@ case "${BOARD}" in
         ;;
     et153-d)
         MB="ET153-MB"
-        DTB_SIZE=$(( 12 * 65536 ))
-        TRF_OFFS=$(( 10 * 65536 ))
+        ;;
+    et123)
+        MB="ET123-MB"
+        ;;
+    et133)
+        MB="ET133-MB"
         ;;
     *)
         MB="${BOARD}"
@@ -85,15 +93,14 @@ LAYOUT=${IMG_DIR}/${MB}.layout
 mkdir -p ${REL_DIR}/${BOARD}
 cp -f ${IMG_DIR}/${BOARD}.bl1.bin ${FLASH_IMG} || exit
 chmod a-x ${FLASH_IMG}
-truncate --no-create --size=${BL1_RESERVED_SIZE} ${FLASH_IMG} || exit
-cat ${IMG_DIR}/${BOARD}.dtb >> ${FLASH_IMG} || exit
 if [ "${PLAT}" = "bs1000" ] ; then
+	truncate --no-create --size=${DDRFW_NVBASE} ${FLASH_IMG} || exit
 	echo 1fc00 01 11 21 31 41 51 61 71 81 91 a1 b1 | xxd -r  - ${FLASH_IMG}
-	truncate --no-create --size=$(($BL1_RESERVED_SIZE + $TRF_OFFS)) ${FLASH_IMG} || exit
 	cat ${BS_TRF_IMG} >> ${FLASH_IMG}
 fi
-truncate --no-create --size=$(($BL1_RESERVED_SIZE + $DTB_SIZE + $UEFI_VARS_SIZE)) ${FLASH_IMG} || exit
+truncate --no-create --size=${FIP_NVBASE} ${FLASH_IMG} || exit
 cat ${FIP_BIN} >> ${FLASH_IMG} || exit
+truncate --no-create --size=$(( ${UEFI_VARS_NVBASE} + ${UEFI_VARS_SIZE} )) ${FLASH_IMG} || exit
 
 dd if=/dev/zero bs=1M count=32 | tr "\000" "\377" > ${PADDED} || exit
 if [ ${PLAT} = "bm1000" -a ${DUAL_FLASH} = 'no' ]; then
@@ -101,17 +108,16 @@ if [ ${PLAT} = "bm1000" -a ${DUAL_FLASH} = 'no' ]; then
 	cat ${BM_SCP_BLOB} ${FLASH_IMG} > ${IMG_DIR}/${MB}.full.img
 	dd if=${IMG_DIR}/${MB}.full.img of=${PADDED} conv=notrunc || exit
 	echo "00000000:0007ffff scp" > ${LAYOUT}
-	echo "00080000:000bffff bl1" >> ${LAYOUT}
-	echo "000c0000:000fffff dtb" >> ${LAYOUT}
-	echo "00100000:001bffff vars" >> ${LAYOUT}
-	echo "001c0000:007fffff fip" >> ${LAYOUT}
+	echo "00080000:0008efff bl1" >> ${LAYOUT}
+	echo "0008f000:002bffff fip" >> ${LAYOUT}
+	echo "002c0000:0037ffff vars" >> ${LAYOUT}
 	echo "00800000:01ffffff fat" >> ${LAYOUT}
 else
 	dd if=${FLASH_IMG} of=${PADDED} conv=notrunc || exit
 	echo "00000000:0003ffff bl1" > ${LAYOUT}
 	echo "00040000:0007ffff dtb" >> ${LAYOUT}
-	echo "00080000:000bffff vars" >> ${LAYOUT}
-	echo "000c0000:007fffff fip" >> ${LAYOUT}
+	echo "00040000:002bffff fip" >> ${LAYOUT}
+	echo "002c0000:0037ffff vars" >> ${LAYOUT}
 	echo "00800000:01ffffff fat" >> ${LAYOUT}
 fi
 

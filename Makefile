@@ -6,8 +6,8 @@ SPI_FLASHER ?= 0
 #MAX_FREQ ?= 2400
 BAIKAL_DDR_CUSTOM_CLOCK_FREQ = $(shell expr $(MAX_FREQ) / 2)
 
-SDK_VER := 6.4
-SDK_REV = 0x64
+SDK_VER := 2409-elp
+SDK_REV = 0x2409
 PLAT = bm1000
 
 # End of user configurable parameters
@@ -65,6 +65,19 @@ else ifeq ($(BOARD),et113)
 	DUAL_FLASH = yes
 	BOARD_VER = 6
 	MAX_FREQ =
+else ifeq ($(BOARD),et133)
+	BE_TARGET = elp_bs
+	PLAT = bs1000
+	DUAL_FLASH = yes
+	OEM_VENDOR = "SAVT"
+	BOARD_VER = 13
+	MAX_FREQ =
+else ifeq ($(BOARD),et123)
+	BE_TARGET = elp_bs
+	PLAT = bs1000
+	DUAL_FLASH = yes
+	BOARD_VER = 14
+	MAX_FREQ =
 else ifeq ($(BOARD),et143)
 	BE_TARGET = elp_bs
 	PLAT = bs1000
@@ -117,6 +130,8 @@ ifeq ($(ARMTF_NO_PRINT),1)
 ARMTF_DEFS += "ARMTF_NO_PRINT=1"
 endif
 
+BOARD_NAME = $(shell echo $(BOARD) | tr '[:lower:]' '[:upper:]')
+
 ARCH = arm64
 NCPU := $(shell nproc)
 
@@ -125,10 +140,14 @@ REL_DIR := $(CURDIR)/release
 
 KERNEL_FLAGS = O=$(KBUILD_DIR) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) -C $(KERN_DIR)
 
+ifneq ($(OEM_VENDOR),)
+	UEFI_FLAGS = -DFIRMWARE_VERSION_STRING=$(SDK_VER) -DFIRMWARE_REVISION=$(SDK_REV)
+else
 ifneq ($(MAX_FREQ),)
 	UEFI_FLAGS = -DFIRMWARE_VERSION_STRING=$(SDK_VER)-$(MAX_FREQ) -DFIRMWARE_REVISION=$(SDK_REV)
 else
 	UEFI_FLAGS = -DFIRMWARE_VERSION_STRING=$(SDK_VER) -DFIRMWARE_REVISION=$(SDK_REV)
+endif
 endif
 ifneq ($(OEM_VENDOR),)
 UEFI_FLAGS += -DFIRMWARE_VENDOR="$(OEM_VENDOR)"
@@ -149,6 +168,7 @@ else
 	UEFI_FLAGS += -DBAIKAL_ELP=TRUE -DBOARD_VER=$(BOARD_VER)
 	UEFI_PLATFORM = Platform/Baikal/BS1000Rdb/BS1000Rdb.dsc
 endif
+UEFI_FLAGS += -DINCLUDE_SERIAL_DXE=1 
 
 ARMTF_BUILD_DIR = $(ARMTF_DIR)/build/$(PLAT)/$(ARMTF_BUILD_TYPE)
 BL1_BIN = $(ARMTF_BUILD_DIR)/bl1.bin
@@ -193,10 +213,10 @@ basetools-clean:
 uefi $(IMG_DIR)/$(BOARD).efi.fd: basetools
 	rm -f $(IMG_DIR)/$(BOARD).efi.fd
 	rm -rf $(UEFI_DIR)/Build
-	BIOS_WORKSPACE=$(UEFI_DIR) CROSS=$(CROSS) BUILD_TYPE=$(UEFI_BUILD_TYPE) UEFI_FLAGS="$(UEFI_FLAGS)" UEFI_PLATFORM="${UEFI_PLATFORM}" SPI_FLASHER=$(SPI_FLASHER) FLASH_IMG=${IMG_DIR}/${BOARD}.flash.img ./builduefi.sh
+	BIOS_WORKSPACE=$(UEFI_DIR) CROSS=$(CROSS) BUILD_TYPE=$(UEFI_BUILD_TYPE) UEFI_FLAGS="$(UEFI_FLAGS)" UEFI_PLATFORM="${UEFI_PLATFORM}" SPI_FLASHER=$(SPI_FLASHER) FLASH_IMG=${IMG_DIR}/${BOARD}.flash.img ELP_BOARD_NAME="$(BOARD_NAME)" ./builduefi.sh
 	cp $(UEFI_DIR)/Build/Baikal/$(UEFI_BUILD_TYPE)_GCC5/FV/BAIKAL_EFI.fd $(IMG_DIR)/$(BOARD).efi.fd
 
-arm-tf $(IMG_DIR)/$(BOARD).fip.bin $(IMG_DIR)/$(BOARD).bl1.bin: $(IMG_DIR)/$(BOARD).efi.fd
+arm-tf $(IMG_DIR)/$(BOARD).fip.bin $(IMG_DIR)/$(BOARD).bl1.bin: $(IMG_DIR)/$(BOARD).efi.fd $(IMG_DIR)/$(BOARD).dtb
 	if [ -d $(ARMTF_DIR)/build ]; then \
 		OLD_BOARD=$$(cat $(ARMTF_DIR)/build/subtarget); \
 		if [ "x$(BOARD)" != "x$$OLD_BOARD" ] ; then \
@@ -211,6 +231,7 @@ arm-tf $(IMG_DIR)/$(BOARD).fip.bin $(IMG_DIR)/$(BOARD).bl1.bin: $(IMG_DIR)/$(BOA
 	$(MAKE) -j$(NCPU) CROSS_COMPILE=$(CROSS) \
 		BAIKAL_TARGET=$(BE_TARGET) \
 		BOARD_VER=$(BOARD_VER) \
+		HW_CONFIG=$(IMG_DIR)/$(BOARD).dtb \
 		$(ARMTF_DEFS) \
 		PLAT=$(PLAT) \
 		SDK_VERSION=$(SDK_VER) \
@@ -242,12 +263,15 @@ list:
 	@echo "BOARD=et101-v2-dp (et101-mb-1.2-rev2 or et101-mb-1.2-rev1.2)"
 	@echo "BOARD=et113"
 	@echo "BOARD=et121"
+	@echo "BOARD=et123"
+	@echo "BOARD=et133"
 	@echo "BOARD=et141"
 	@echo "BOARD=et143"
 	@echo "BOARD=et161"
 	@echo "BOARD=et163"
 	@echo "BOARD=et151-lvds"
 	@echo "BOARD=et151-dp"
+	@echo "BOARD=et153-d"
 	@echo "BOARD=et171"
 	@echo "BOARD=em407"
 	@echo "BOARD=e107"
