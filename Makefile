@@ -235,7 +235,7 @@ arm-tf $(IMG_DIR)/$(BOARD).fip.bin $(IMG_DIR)/$(BOARD).bl1.bin: $(IMG_DIR)/$(BOA
 		$(ARMTF_DEFS) \
 		PLAT=$(PLAT) \
 		SDK_VERSION=$(SDK_VER) \
-		VERSION_STRING="$(SDK_VER)-elp" \
+		VERSION_STRING="$(SDK_VER)" \
 		BL33=$(IMG_DIR)/$(BOARD).efi.fd \
 		DEBUG=$(ARMTF_DEBUG) \
 		-C $(ARMTF_DIR) all fip memmap
