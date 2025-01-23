@@ -4,8 +4,8 @@ stages:
   - build
 
 variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-  GIT_SUBMODULE_DEPTH: 1
+  GIT_SUBMODULE_STRATEGY: normal
+  GIT_SUBMODULE_DEPTH: 20
   GIT_SUBMODULE_UPDATE_FLAGS: --jobs 8
 
 .build_firmware_template: &build_firmware_dfn
@@ -13,6 +13,7 @@ variables:
   tags:
     - kubernetes-mid
   script:
+    - cd uefi/edk2; git submodule sync; git submodule update --init; cd ../../
     - make BOARD=${BUILD_TARGET} ARMTF_DEBUG=${ARMTF_DEBUG} UEFI_DEBUG=${UEFI_DEBUG}
     - |
       VERSION=${CI_COMMIT_SHORT_SHA}

@@ -200,7 +200,9 @@ endif
 endif
 
 submodules:
-	git submodule update --init --recursive --recommend-shallow
+	git submodule sync
+	git submodule update --init --depth=20
+	cd uefi/edk2; git submodule sync; git submodule update --init --depth=20
 
 # Note: BaseTools cannot be built in parallel.
 basetools:
