@@ -1,22 +1,22 @@
 [submodule "arm-tf"]
 	path = arm-tf
 	url = ../arm-tf
-	branch = 6.4-elp
+	branch = 2409-elp
 [submodule "uefi/edk2-platform-baikal"]
 	path = uefi/edk2-platform-baikal
 	url = ../edk2-platform-baikal
-	branch = 6.4-elp
+	branch = 2409-elp
 [submodule "uefi/edk2"]
 	path = uefi/edk2
 	url = ../edk2
-	branch = lm-sdk-6.4
+	branch = sdk-2409
 [submodule "uefi/edk2-non-osi"]
 	path = uefi/edk2-non-osi
-	url = ../edk2-non-osi.git
+	url = http://github.com/tianocore/edk2-non-osi.git
 	branch = master
 [submodule "uefi/edk2-platforms"]
 	path = uefi/edk2-platforms
-	url = ../edk2-platforms.git
+	url = https://github.com/tianocore/edk2-platforms.git
 [submodule "kernel"]
 	path = kernel
 	url = ../kernel
